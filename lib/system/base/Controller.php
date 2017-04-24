@@ -48,6 +48,12 @@ class Controller{
 				throw new Exception("The view ".$view." is not found in the module application");
 			}
 		}
+		//Se le pasan los parametros a la vista
+		if(count($parameters)!=0){
+			foreach($parameters as $k => $v){
+				$$k = $v;
+			}
+		}
 		require($routeView);
 	}
 	

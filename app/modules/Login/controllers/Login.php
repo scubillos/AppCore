@@ -8,8 +8,9 @@ class Login Extends Controller{
 	
 	public function Info(){
 		//$this->AddJS('modules/Login/assets/js/prueba.js');
-		
-		$this->RenderView();
+		$data["numero"] = 456;
+		$data["string"] = "Mi framework";
+		$this->RenderView("Index",$data);
 	}
 	
 }

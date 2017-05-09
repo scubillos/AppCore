@@ -59,9 +59,9 @@ class Router{
 		define("MODULE_USED",static::$app_path."modules/".$Controller."/");		//Modulo actual
 		//Se hace el llamado al controlador incluyendo la clase del controlador base
 		$routeClass = static::$app_path."modules/".$Controller."/controllers/".$Controller.".php";
-		include(static::$sys_path."/system/base/Controller.php");
 		require_once($routeClass);
-		static::$object = new $Controller();
+		class_alias($Controller, "ControllerLoaded");
+		static::$object = new ControllerLoaded;
 		return method_exists(static::$object,$Method);
 	}
 	

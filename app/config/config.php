@@ -10,5 +10,7 @@
 	$config["INITIAL_CONTROLLER"] = 'Login';
 	// Metodo inicial del controlador inicial
 	$config["INITIAL_METHOD"] = 'Index';
+	// Tema del aplicativo
+	$config["THEME"] = 'default';
 	
 ?>

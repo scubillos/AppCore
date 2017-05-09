@@ -3,31 +3,30 @@
 use Base\Controller as Controller;
 
 class Login Extends Controller{
-	var $Login;
+	public $titlePage = "Login"; //Para el titulo de la pagina
+	
 	public function __construct(){
-		$this->Login = $this->LoadModel();
+		parent::__construct();
 	}
 	
-	public function Index(){		
-		$this->AddCSS('modules/Login/assets/css/prueba_estilos.css');
+	public function Index(){
 		$this->RenderView("Index");
-		
-		$where = [
-			"id" => [ "<" => 10]
-		];
-		
-		$users = $this->Login->where($where);
 	}
 	
-	public function Crear(){
+	public function Auth(){
 		if($_POST){
-			//var_dump($_POST);
-			
-			$this->Login->insert($_POST);
+			$nombre = $_POST["usuario"];
+			$users = $this->LoadModel("Users/Users");
+			$users = $users->where([ "nombre" => $nombre ])->toArray();
+			if(count($users)==1){
+				$idbin = decbin($users[0]["id"]);
+				$nombreus = $users[0]["nombre"];
+				$this->session->varSession_set("idbin",$idbin);
+				$this->session->varSession_set("nombre",$nombreus);
+				$this->redirect("Home");
+			}
 		}
-		$this->RenderView("Formulario");
 	}
-	
 }
 
 ?>

@@ -16,6 +16,38 @@
 namespace Base;
 
 class Controller{
+	public $titlePage = "";
+	
+	public $session = "";
+	
+	public function __construct(){
+		$this->FrontEnd();
+		$this->ClassSession();
+	}
+	
+	//Se cargan JS,CSS,HTML
+	public function FrontEnd(){
+		$headHTML = '<!DOCTYPE html><html lang="es"><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><meta http-equiv="X-UA-Compatible" content="ie=edge"><title>'.$this->titlePage.'</title>';
+		//Se requiere el archivo con la configuracion de plugins y librerias generales
+		require(APP_PATH."config/frontend.php");
+		//Se generan los importadores de JS
+		$JS = $frontend["JS"];
+		foreach($JS as $nameJS => $routeJS){
+			$headHTML .= '<script type="text/javascript" src="'.URL_APP.$routeJS.'" ></script>';
+		}
+		$CSS = $frontend["CSS"];
+		//Se generan los importadores de CSS
+		foreach($CSS as $nameCSS => $routeCSS){
+			$headHTML .= '<link rel="stylesheet" type="text/css" href="'.URL_APP.$routeCSS.'" />';
+		}
+		echo $headHTML;
+	}
+	
+	//Se carga la clase de session
+	public function ClassSession(){
+		require(SYS_PATH."system/Session.php");
+		$this->session = new Session;
+	}
 	
 	//Funcion para cargar un modelo
 	public function LoadModel($model = ""){
@@ -36,10 +68,10 @@ class Controller{
 				if(is_file($routeModelApp)){
 					$routeModel = $routeModelApp;
 				}else{
-					throw new Exception("The model ".$model." is not found in the application");
+					throw new \Exception("The model ".$model." is not found in the application");
 				}
 			}else{
-				throw new Exception("The model ".$model." is not found in the module application");
+				throw new \Exception("The model ".$model." is not found in the module application");
 			}
 		}
 		include($routeModel);
@@ -65,10 +97,10 @@ class Controller{
 				if(is_file($routeViewApp)){
 					$routeView = $routeViewApp;
 				}else{
-					throw new Exception("The view ".$view." is not found in the application");
+					throw new \Exception("The view ".$view." is not found in the application");
 				}
 			}else{
-				throw new Exception("The view ".$view." is not found in the module application");
+				throw new \Exception("The view ".$view." is not found in the module application");
 			}
 		}
 		//Se le pasan los parametros a la vista
@@ -95,7 +127,7 @@ class Controller{
 			if(is_file($routeInApplication)){
 				$headHTML .= '<script type="text/javascript" src="'.URL_APP.$routeInApplication.'" ></script>';
 			}else{
-				throw new Exception("The JS file ".$js." is not found in the application");
+				throw new \Exception("The JS file ".$js." is not found in the application");
 			}
 		}
 		
@@ -115,7 +147,7 @@ class Controller{
 			if(is_file($routeInApplication)){
 				$headHTML .= '<link rel="stylesheet" type="text/css" href="'.URL_APP.$routeInApplication.'" />';
 			}else{
-				throw new Exception("The CSS file ".$css." is not found in the application");
+				throw new \Exception("The CSS file ".$css." is not found in the application");
 			}
 		}
 		
@@ -125,6 +157,64 @@ class Controller{
 	//Funcion para obtener url base del aplicativo
 	public function UrlBase(){
 		return URL_APP;
+	}
+	
+	//Funcion para llamar metodo de otro controlador
+	public function callAction($url){
+		if($url == ""){
+			throw new \Exception("The action called not is defined");
+		}
+		if(strpos($url,"/") !== false){ //Se intenta llamar una accion de otro controlador
+			
+			
+			if(strpos($url,"/") !== false){
+				//Contiene slashes la url
+				$Action = explode("/",$url);
+				$Controller = $Action[0];								//Controlador
+				$Method = $Action[1] != '' ? $Action[1] : "Index";		//Metodo
+				$Params = [];											//Parametros de la funcion
+				if(count($Action)>2){
+					for($key=2; $key<count($Action); $key++){
+						if($Action[$key]!=''){
+							$Params[] = $Action[$key];
+						}
+					}
+				}
+			}else{
+				//No tiene ningun slash, solo nombre del controller tal vez
+				$Controller = $url;		//Controlador
+				$Method = "Index";		//Metodo
+				$Params = [];			//Parametros de la funcion
+			}
+			
+			//Se valida que el controlador exista
+			if(!file_exists(APP_PATH."modules/".$Controller."/controllers/".$Controller.".php")){
+				throw new \Exception("The controller ".$Controller." is not found in the application");
+			}
+			//Se valida que el metodo exista
+			
+			$routeClass = APP_PATH."modules/".$Controller."/controllers/".$Controller.".php";
+			require_once($routeClass);
+			$objectClassCalled = new $Controller;
+			
+			if(!method_exists($objectClassCalled,$Method)){
+				throw new \Exception("The method ".$Method." is not found in the controller");
+			}
+			//Se dispara la accion
+			if(count($Params)==0){
+				call_user_method($Method,$objectClassCalled);
+			}else{
+				call_user_method_array($Method,$objectClassCalled,$Params);
+			}
+			
+		}else{
+			throw new \Exception("The action requires a controller and action separes with slashes");
+		}
+	}
+	
+	//Funcion para redireccionar
+	public function redirect($url){
+		header("location: ".URL_APP.$url);
 	}
 }
 

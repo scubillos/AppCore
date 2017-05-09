@@ -22,20 +22,25 @@ class DB{
 			$statement = static::connection();
 			$prepareStatement = $statement->prepare($sql);
 			$prepareStatement->execute($params);
-			
 			$result = [];
 			if(static::verifyStatusExecute($prepareStatement)){
-				while($row = $prepareStatement->fetch()){
-					$result[] = $row;
-				}
-				if(count($result)==1){
-					$result = $result[0];
-				}
+				/*
+				if($prepareStatement->fetchColumn() > 0){
+					if($prepareStatement->fetchColumn() == 1){
+						$result[0] = $prepareStatement->fetch();
+						var_dump($result);
+					}else{
+						while($row = $prepareStatement->fetch()){
+							$result[] = $row;
+						}
+					}
+				}*/
+				
+				$result = $prepareStatement->fetchAll();
 			}
 		}catch(\PDOException $e){
 			die($e->getMessage());
 		}
-		
 		return $result;
 	}
 	

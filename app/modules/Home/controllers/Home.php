@@ -1,9 +1,10 @@
 <?php
+use Base\Controller as Controller;
 
-class Login Extends Controller{
+class Home Extends Controller{
 	
-	public function Index(){		
-		$this->RenderView();
+	public function Index(){
+		$this->RenderView("Home/Index");
 	}
 	
 	public function Info(){

@@ -9,4 +9,18 @@
 	echo isset($string) ? '<li>string: '.$string.'</li>' : "";
 	?>
 </ul>
+<?php
+if(isset($datos)){
+?>
+<ul>
+	<div>Consulta en la BD</div>
+	<li>Id: <?= $datos->id ?></li>
+	<li>Nombre: <?= $datos->nombre ?></li>
+	<li>Edad: <?= $datos->edad ?></li>
+	<li>Correo: <?= $datos->correo ?></li>
+</ul>
+<?php
+}
+?>
+
 </span>

@@ -1,16 +1,31 @@
 <?php
 
+use Base\Controller as Controller;
+
 class Login Extends Controller{
-	
-	public function Index(){		
-		$this->RenderView();
+	var $Login;
+	public function __construct(){
+		$this->Login = $this->LoadModel();
 	}
 	
-	public function Info(){
-		//$this->AddJS('modules/Login/assets/js/prueba.js');
-		$data["numero"] = 456;
-		$data["string"] = "Mi framework";
-		$this->RenderView("Index",$data);
+	public function Index(){		
+		$this->AddCSS('modules/Login/assets/css/prueba_estilos.css');
+		$this->RenderView("Index");
+		
+		$where = [
+			"id" => [ "<" => 10]
+		];
+		
+		$users = $this->Login->where($where);
+	}
+	
+	public function Crear(){
+		if($_POST){
+			//var_dump($_POST);
+			
+			$this->Login->insert($_POST);
+		}
+		$this->RenderView("Formulario");
 	}
 	
 }

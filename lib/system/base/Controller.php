@@ -13,15 +13,38 @@
 	- METHOD_CALLED = Metodo llamado
 	- MODULE_USED = Modulo que se esta utilizando
 ***/
+namespace Base;
 
 class Controller{
 	
-	//Funcion para cargar el modelo correspondiente al controlador, es decir el modelo que contiene el mismo nombre que el controlador.
-	public function LoadThisModel($model = ""){
-	}
-	
-	//Funcion para cargar un modelo de otro modulo
+	//Funcion para cargar un modelo
 	public function LoadModel($model = ""){
+		$model = $model != "" ? $model : CONTROLLER_CALLED;		// Si $model esta vacia significa que se esta llamando al modelo que se llama igual al controlador actual
+		$nameModel = $model."Model";
+		$routeModelModule = MODULE_USED."models/".$model.".php";
+		if(is_file($routeModelModule)){
+			// Vista del Modulo actual
+			$routeModel = $routeModelModule;
+		}else{
+			if(strpos($model,"/") !== false){			// Con slashes ignificaria que se esta llamando el modelo de otro modulo
+				$modelInfo = explode("/",$model);
+				$module = $modelInfo[0];
+				$model2 = $modelInfo[1];
+				$nameModel = $model2."Model";
+				
+				$routeModelApp = APP_PATH."modules/".$module."/models/".$model2.".php";
+				if(is_file($routeModelApp)){
+					$routeModel = $routeModelApp;
+				}else{
+					throw new Exception("The model ".$model." is not found in the application");
+				}
+			}else{
+				throw new Exception("The model ".$model." is not found in the module application");
+			}
+		}
+		include($routeModel);
+		$objModel = new $nameModel;
+		return $objModel;
 	}
 	
 	//Funcion para cargar la vista		
@@ -54,7 +77,9 @@ class Controller{
 				$$k = $v;
 			}
 		}
+		unset($routeViewModule);
 		require($routeView);
+		unset($routeView);
 	}
 	
 	//Funcion para cargar JS
@@ -75,6 +100,31 @@ class Controller{
 		}
 		
 		echo $headHTML;
+	}
+	
+	//Funcion para cargar CSS
+	public function AddCSS($stylesheet){
+		$headHTML = "";
+		if(!is_array($stylesheet)){
+			$stylesheet = [$stylesheet];
+		}
+		foreach($stylesheet as $css){
+			$strExt = strtolower(substr($css,-4)) != ".css" ? ".css" : "";
+			$css = $css.$strExt;
+			$routeInApplication = APP_PATH.$css;
+			if(is_file($routeInApplication)){
+				$headHTML .= '<link rel="stylesheet" type="text/css" href="'.URL_APP.$routeInApplication.'" />';
+			}else{
+				throw new Exception("The CSS file ".$css." is not found in the application");
+			}
+		}
+		
+		echo $headHTML;
+	}
+	
+	//Funcion para obtener url base del aplicativo
+	public function UrlBase(){
+		return URL_APP;
 	}
 }
 

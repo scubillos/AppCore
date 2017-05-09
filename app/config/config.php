@@ -5,7 +5,7 @@
 	
 	$config = [];
 	// Url Base de la aplicacion
-	$config["URL_APP"] = '/AppCore/';
+	$config["URL_APP"] = 'http://localhost/AppCore/';
 	// Controlador inicial de la aplicacion
 	$config["INITIAL_CONTROLLER"] = 'Login';
 	// Metodo inicial del controlador inicial

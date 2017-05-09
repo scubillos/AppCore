@@ -15,6 +15,7 @@ class Model{
 	protected $table = "";
 	protected $primaryKey = "id";
 	protected $fields = [];
+	protected $rows = [];
 	
 	// Consultas
 	public static function find($keyValue){
@@ -64,27 +65,31 @@ class Model{
 		
 		$sql = "select * from ".$model->table." where ".$where;
 		
-		//die($sql);
 		$result = DB::query($sql,$params);
+		
 		if(is_object($result)){
+			$model->rows[0] = (object)[];
 			foreach($result as $key => $value){
 				if(in_array($key,$model->fields)){
 					$model->$key = $value;
+					$model->rows[0]->$key = $value;
 				}
 			}
 		}else if(is_array($result)){
-			$model->rows = [];
 			$k = 0;
 			foreach($result as $row){
 				foreach($row as $key => $value){
-					if(in_array($key,$model->fields)){
+					if(in_array($key,$model->fields) AND $key!="0"){
+						if(!isset($model->rows[$k]) OR !is_object($model->rows[$k])){
+							$model->rows[$k] = (object)[];
+						}
 						$model->rows[$k]->$key = $value;
 					}
 				}
 				$k++;
 			}
 		}
-		var_dump($model);
+		
 		return $model;
 	}
 	
@@ -106,6 +111,11 @@ class Model{
 		$result = $model->find($lastInsertId);
 		print_r($result);
 		return $result;
+	}
+	
+	// Funcion ToArray para convertir el objeto en un arreglo
+	public function toArray(){
+		return json_decode(json_encode($this->rows), true);
 	}
 }
 

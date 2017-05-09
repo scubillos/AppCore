@@ -1,26 +1,20 @@
-<span class="Apple-style-span" style="font-family: 'Trebuchet MS', sans-serif;">HOLA A TODOS
-</span>
-</br></br></br>
-<span class="Apple-style-span" style="font-family: 'Trebuchet MS', sans-serif;">AQUI YA SE CARGO LA VISTA DEL INDEX DEL LOGIN
-<ul>
-	<div>Variables enviadas desde el controlador</div>
-	<?php 
-	echo isset($numero) ? '<li>numero: '.$numero.'</li>' : "";
-	echo isset($string) ? '<li>string: '.$string.'</li>' : "";
-	?>
-</ul>
-<?php
-if(isset($datos)){
-?>
-<ul>
-	<div>Consulta en la BD</div>
-	<li>Id: <?= $datos->id ?></li>
-	<li>Nombre: <?= $datos->nombre ?></li>
-	<li>Edad: <?= $datos->edad ?></li>
-	<li>Correo: <?= $datos->correo ?></li>
-</ul>
-<?php
-}
-?>
-
-</span>
+<div id="wrapper">	
+	<div class="container1">
+		<h1 class="h1, text-center">LOGIN</h1>
+	</div>
+	<section>
+		<div class="container">
+			<form action="<?= $this->UrlBase(); ?>Login/Auth" method="post" autocomplete="off">
+				<div class="form-group">
+					<label for="usuario">Usuario: </label>
+					<input type="text" name="usuario" class="form-control" id="usuario" placeholder="Usuario" required autofocus>
+				</div>
+				<div class="form-group">
+					<label for="contraseña">Contraseña: </label>
+					<input type="password" name="pass" class="form-control" id="contraseña" placeholder="Contraseña" required>
+				</div>
+				<center><button type="submit" name="boton" class="btn btn-success">Enviar</button></center>
+			</form>
+		</div>
+	</section>
+</div>
